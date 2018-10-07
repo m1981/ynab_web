@@ -87,8 +87,6 @@
                         {% set cell_class = 'increased' %}
                     {% elif diff < 0 %}
                         {% set cell_class = 'decreased' %}
-                    {% else %}
-
                     {% endif %}
 
                     <span class="{{ cell_class }}">{{ diff | abs}}</span>
