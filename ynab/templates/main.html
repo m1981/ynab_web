@@ -14,7 +14,7 @@
 
         body{
             font-family: 'Lato';
-            font-size: 18px;
+            font-size: 14px;
             color: #11323C;
             background-color: #559fb3;
         }
@@ -27,19 +27,33 @@
 
         td{
             spacing: 0;
-            padding: 10px;
+            padding: 4px;
             border-left: #e4e7ea solid 1px;
             border-bottom: #e4e7ea solid 1px;
         }
         .header{
             font-weight: bold;
-            background-color: #ebf6f9;
+            color: white;
+            background-color: #163a47;
         }
 
         .col_header{
-            color: rgba(179, 136, 104, 0.87);
+            color: black;
         }
-        
+
+        .increased{
+            color: black;
+        }
+
+        .decreased{
+            color: black;
+{#            color: rgba(9, 225, 24, 0.87);#}
+        }
+
+        .amount{
+            font-size: smaller;
+            color: #b4b7b9;
+        }
     </style>
 </head>
 <body>
@@ -50,8 +64,10 @@
         {# Categories in rows #}
         <tr>
         {% set row_num=loop.index %}
-        {% for col in row %}
+        {%  set amount = 0 %}
+        {% for cell in row %}
             {% set col_num = loop.index %}
+
             {% if row_num == 1 %}
                 {% set _class="header" %}
             {% elif col_num == 1%}
@@ -59,8 +75,29 @@
             {% endif %}
 
             <td class="{{ _class }}">
-                {{ col }}
+                {% set prev_cell = loop.previtem %}
+
+                {% if prev_cell is number %}
+                    {% set diff = cell - prev_cell %}
+                    {%  if diff > 0 %}
+                        {% set cell_class = 'increased' %}
+                        {% set image_url="static/arr_red.png" %}
+                    {% elif diff < 0 %}
+                        {% set cell_class = 'decreased' %}
+                        {% set image_url="static/arr_green.png" %}
+                    {% else %}
+
+                    {% endif %}
+                    {% if  image_url is defined %}
+                        <img width="16" height="16" src={{ image_url }}>
+                    {% endif %}
+                    <span class="{{ cell_class }}">{{ diff | abs}}</span>
+                    <span class="amount">{{ cell }}</span>
+                {% else %}
+                    <div class="caption">{{ cell }}</div>
+                {% endif %}
             </td>
+            {% set amount = cell %}
 
         {% endfor %}
         </tr>
