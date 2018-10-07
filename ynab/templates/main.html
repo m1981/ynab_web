@@ -3,41 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <title>YNAB report</title>
+    <style>
+
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Lato'), url(https://fonts.gstatic.com/s/lato/v14/S6uyw4BMUTPHjx4wXiWtFCc.woff2) format('woff2');
+        }
+
+        body{
+            font-family: 'Lato';
+            font-size: 18px;
+            color: #11323C;
+            background-color: #559fb3;
+        }
+
+        table{
+            background-color: #ebf6f9;
+            border-right: #e4e7ea solid 1px;
+            border-top: #e4e7ea solid 1px;
+        }
+
+        td{
+            spacing: 0;
+            padding: 10px;
+            border-left: #e4e7ea solid 1px;
+            border-bottom: #e4e7ea solid 1px;
+        }
+        .header{
+            font-weight: bold;
+            background-color: #ebf6f9;
+        }
+
+        .col_header{
+            color: rgba(179, 136, 104, 0.87);
+        }
+        
+    </style>
 </head>
 <body>
 
-<table border="1">
-    <tr>
-        <td>Cat</td>
-        <td>W35</td>
-        <td>W36</td>
-    </tr>
-    <tr>
-        <td>Groceries</td>
-        <td>1200</td>
-        <td>1350</td>
-    </tr>
-    <tr>
-        <td>Dinning out</td>
-        <td>280</td>
-        <td>320</td>
-    </tr>
-</table>
 
-{#    <table border="1">#}
-{#    {% for  in report_weeks.items() %}#}
+    <table cellspacing="0">
+    {% for row in report_weeks %}
         {# Categories in rows #}
-{#        <tr>#}
-{#            {% for cat_key, cat_value in i.items() %}#}
-{#            {% if cat_idx == 0 %}#}
-{#                <td>{{ cat_key }}</td>#}
-{#            {% endif %}#}
-{##}
-            {# Spent value for coresponding time frame. #}
-{#            <td></td>#}
-{#        </tr>#}
-{#        {{i}}<br>#}
-{#    {% endfor %}#}
-{#    </table>#}
+        <tr>
+        {% set row_num=loop.index %}
+        {% for col in row %}
+            {% set col_num = loop.index %}
+            {% if row_num == 1 %}
+                {% set _class="header" %}
+            {% elif col_num == 1%}
+                {% set _class="col_header" %}
+            {% endif %}
+
+            <td class="{{ _class }}">
+                {{ col }}
+            </td>
+
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
 </body>
 </html>

@@ -19,6 +19,7 @@ def getData(filepath, encoding='utf-8'):
                         try: val2 = int(float(val))
                         except: val2=val
                         new_row.append(val2)
+                print(new_row)
                 #
                 ret.append(new_row)
             except:

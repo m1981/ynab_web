@@ -2,7 +2,7 @@ __author__ = 'Michal'
 
 import unittest
 import os
-from backports import csv
+
 from modules.data_source import getData
 
 class TestDataSource(unittest.TestCase):
