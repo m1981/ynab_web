@@ -12,8 +12,8 @@ class TestDataSource(unittest.TestCase):
     def test_load(self):
         # print(__file__)
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-        # data_file = os.path.join(THIS_FOLDER, './ynab-reports.csv')
-        data_file = os.path.join(THIS_FOLDER, './ynab_ascii_test.csv')
+        data_file = os.path.join(THIS_FOLDER, './ynab-reports.csv')
+        # data_file = os.path.join(THIS_FOLDER, './ynab_ascii_test.csv')
         data = getData(data_file)
 
         self.assertEqual(data[2][0], 'Misiu jedzenie')
