@@ -33,9 +33,6 @@
             border-bottom: #e4e7ea solid 1px;
         }
 
-        td.even{
-          background-color: #dae4e7;
-        }
 
         .header{
             font-weight: bold;
@@ -48,12 +45,10 @@
         }
 
         .increased{
-{#            color: black;#}
             color: indianred;
         }
 
         .decreased{
-{#            color: black;#}
             color: rgba(9, 225, 24, 0.87);
         }
 
@@ -80,32 +75,20 @@
                 {% set _class="header" %}
             {% elif col_num == 1 %}
                 {% set _class="col_header" %}
-            {% else %}
-                {% if row_num is even %}
-                    {% set _odd_even = 'even' %}
-                {% else %}
-                    {% set _odd_even = 'od' %}
-                {% endif %}
             {% endif %}
 
 
-            <td class="{{ _class ~ _odd_even }}">
+            <td class="{{ _class }}">
                 {% set prev_cell = loop.previtem %}
 
                 {% if prev_cell is number %}
                     {% set diff = cell - prev_cell %}
                     {%  if diff > 0 %}
                         {% set cell_class = 'increased' %}
-{#                        {% set image_url="static/arr_red.png" %}#}
                     {% elif diff < 0 %}
                         {% set cell_class = 'decreased' %}
-{#                        {% set image_url="static/arr_green.png" %}#}
                     {% else %}
 
-                    {% endif %}
-
-                    {% if  image_url is defined %}
-                        <img width="16" height="16" src={{ image_url }}>
                     {% endif %}
 
                     <span class="{{ cell_class }}">{{ diff | abs}}</span>
