@@ -39,6 +39,7 @@ def sortData(data):
 
 
 def sumTotal(data):
+    total = []
     for col_idx, col in enumerate(data[0]):
         if col_idx == 0: continue
         sum = 0
@@ -46,7 +47,12 @@ def sumTotal(data):
             if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]: continue
             print(float(row[col_idx]))
             sum += float(row[col_idx])
+        #
         print('total: %s' % sum)
+        total.append(int(sum))
+    #
+    data.insert(1, total)
+    print(data)
         # exit(12)
 # DictReader
 # b"OrderedDict([('Category', 'Car & Bike'), ('Mar 2017', '0.00'), ('Apr 2017', '0.00'), ('May 2017', '0.00'), ('Jun 2017', '0.00'), ('Jul 2017', '0.00'), ('Aug 2017', '0.00'), ('Sep 2017', '0.00'), ('Oct 2017', '0.00'), ('Nov 2017', '0.00'), ('Dec 2017', '0.00'), ('Jan 2018', '0.00'), ('Feb 2018', '0.00'), ('Mar 2018', '0.00'), ('Apr 2018', '0.00'), ('May 2018', '0.00'), ('Jun 2018', '-200.00'), ('Jul 2018', '-52.99'), ('Aug 2018', '-167.61'), ('Sep 2018', '-172.83'), ('Oct 2018', '0.00'), ('Average', '-29.67'), ('Total', '-593.43')])"
