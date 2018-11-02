@@ -27,10 +27,15 @@
 
         td{
             spacing: 0;
+            text-align: right;
             padding: 4px;
+            padding-top: 10px;
+            padding-bottom: 10px;
             padding-left: 7px;
-            border-left: #e4e7ea solid 1px;
+{#            border-left: #e4e7ea solid 1px;#}
+            border-left: #e4e7ea solid 0px;
             border-bottom: #e4e7ea solid 1px;
+{#            border-bottom: #e4e7ea solid 0px;#}
         }
 
 
@@ -40,15 +45,21 @@
             background-color: #163a47;
         }
 
+{#        span{#}
+{#            border: double #11323C 1px;#}
+{#        }#}
+
         .col_header{
             color: black;
         }
 
         .increased{
+            text-align: left;
             color: indianred;
         }
 
         .decreased{
+            text-align: left;
             color: rgba(9, 225, 24, 0.87);
         }
 
@@ -62,7 +73,7 @@
 <body>
 
 
-    <table cellspacing="0">
+    <table border="0" cellspacing="0">
     {% for row in report_weeks %}
         {# Categories in rows #}
         <tr>
@@ -78,23 +89,24 @@
             {% endif %}
 
 
-            <td class="{{ _class }}">
+{#            <td class="{{ _class }}">#}
                 {% set prev_cell = loop.previtem %}
 
                 {% if prev_cell is number %}
-                    {% set diff = cell - prev_cell %}
+                    {% set diff = cell | abs - prev_cell | abs %}
                     {%  if diff > 0 %}
                         {% set cell_class = 'increased' %}
                     {% elif diff < 0 %}
                         {% set cell_class = 'decreased' %}
                     {% endif %}
 
-                    <span class="{{ cell_class }}">{{ diff | abs}}</span>
-                    <span class="amount">{{ cell }}</span>
+                    <td class="{{ _class }}"><span class="{{ cell_class }}">{{ diff | abs}}</span></td>
+                    <td class="{{ _class }}"><span class="amount">{{ cell }}</span></td>
+
                 {% else %}
-                    <div class="caption">{{ cell }}</div>
+                    <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>
                 {% endif %}
-            </td>
+{#            </td>#}
             {% set amount = cell %}
 
         {% endfor %}
