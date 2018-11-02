@@ -13,6 +13,7 @@ class TestDataSource(unittest.TestCase):
         data = ds.getData(data_file, 10, 4)
         print('\n\n')
         ds.sumTotal(data)
+        ds.printData(data)
 
     def test_load(self):
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +29,6 @@ class TestDataSource(unittest.TestCase):
         # Test sum total
         ds.sumTotal(data)
         total_row_idx = 1
-        self.assertEqual(data[total_row_idx][0], -1426)
-        self.assertEqual(data[total_row_idx][4], -2219)
+        self.assertEqual(data[total_row_idx][1], -1426)
+        self.assertEqual(data[total_row_idx][5], -2219)
 
