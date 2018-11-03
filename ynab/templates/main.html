@@ -37,8 +37,7 @@
             padding-top: 10px;
             padding-bottom: 10px;
             padding-left: 7px;
-{#            border-left: #e4e7ea solid 1px;#}
-            border-left: #e4e7ea solid 0px;
+            border-left: #e4e7ea solid 1px;
             border-bottom: #e4e7ea solid 1px;
 {#            border-bottom: #e4e7ea solid 0px;#}
         }
@@ -85,10 +84,13 @@
 
         <tr class="{{ row_class }}">
         {% set row_num=loop.index %}
-        {%  set amount = 0 %}
+        {% set amount = 0 %}
+
+        {#  For each month in category #}
         {% for cell in row %}
             {% set col_num = loop.index %}
 
+            {# Set header styles #}
             {% if row_num == 1 %}
                 {% set _class="header" %}
             {% elif col_num == 1 %}
@@ -96,22 +98,28 @@
             {% endif %}
 
                 {% if cell is number %}
-                    {% set cell = cell | int | abs %}
+                    {% set cell = cell  %}
                 {%  endif %}
 
                 {% set prev_cell = loop.previtem %}
 
 
                 {% if prev_cell is number %}
-                    {% set diff = cell | abs - prev_cell | abs  %}
-                    {%  if diff > 0 %}
-                        {% set cell_class = 'increased' %}
-                    {% elif diff < 0 %}
-                        {% set cell_class = 'decreased' %}
+                    {% set diff =  cell - prev_cell %}
+                    {% if prev_cell > 0 %}
+                        {%  set diff = 0 %}
                     {% endif %}
 
-                    <td class="{{ _class }}"><span class="{{ cell_class }}">{{ diff | abs | int}}</span></td>
-                    <td class="{{ _class }}"><span class="amount">{{ cell | abs | int}}</span></td>
+                    {% if diff > 0 %}
+                        {% set cell_class = 'decreased' %}
+                        {% set sign = "+" %}
+                    {% elif diff < 0 %}
+                        {% set sign = "" %}
+                        {% set cell_class = 'increased' %}
+                    {% endif %}
+
+                    <td class="{{ _class }}"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>
+                    <td class="{{ _class }}"><span class="amount">{{ cell | int }}</span></td>
 
                 {% else %}
                     <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>

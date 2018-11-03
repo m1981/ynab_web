@@ -40,12 +40,16 @@ def sumTotal(data):
         if col_idx == 0: continue
         sum = 0
         for row_idx, row in enumerate(data):
+            # Ignore grouped categories and hidden categories
             if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]: continue
-            # print(float(row[col_idx]))
-            sum += float(row[col_idx])
-        #
-        # print('total: %s' % sum)
+            val = float(row[col_idx])
+
+            # Calculate only spendings
+            if val < 0:
+                sum += val
+        # Add rounded sum
         total.append(int(sum))
+        # print('total: %s' % int(sum))
     #
     data.insert(1, total)
 
