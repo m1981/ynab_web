@@ -3,7 +3,7 @@ __author__ = 'Michal'
 import csv
 import io
 
-def getData(filepath, start=0, skip_end=0, encoding='utf-8'):
+def getData(filepath, start=0, count=0, encoding='utf-8'):
     ret = []
     with io.open(filepath, 'r', encoding=encoding) as csvfile:
         cvsreader = csv.reader(csvfile)
@@ -11,13 +11,16 @@ def getData(filepath, start=0, skip_end=0, encoding='utf-8'):
             try:
                 new_row = []
                 columns = len(row)
+                if start < 0:
+                    start = (columns-0) + start
+
                 for j, val in enumerate(row):
                     if j == 0:
                         safe_label = ''.join([i if ord(i) < 128 else '' for i in val])
                         safe_label = safe_label.strip()
                         new_row.append(safe_label)
                     else:
-                        if not (j > start and j <= columns - skip_end):
+                        if not (j > start and j <= start + count ):
                             continue
                         try: val2 = float(val)
                         except: val2=val

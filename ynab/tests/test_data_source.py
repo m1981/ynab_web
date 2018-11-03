@@ -10,7 +10,7 @@ class TestDataSource(unittest.TestCase):
     def setUp(self):
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
         data_file = os.path.join(THIS_FOLDER, './ynab-reports.csv')
-        data = ds.getData(data_file, 10, 4)
+        data = ds.getData(data_file, -10, 6)
         print('\n\n')
         ds.sumTotal(data)
         ds.printData(data)
@@ -27,8 +27,14 @@ class TestDataSource(unittest.TestCase):
         ds.sortData(data)
 
 
+    def test_load_negative_offset(self):
+        data = ds.getData(self.data_file, -4, 1)
+        self.assertEqual(data[0][1], 'Oct 2018')
+
+
+
     def test_sum_total_spendings(self):
-        data = ds.getData(self.data_file, 0, 0)
+        data = ds.getData(self.data_file, 0, 3)
 
         # Test sum total
         ds.sumTotal(data)
@@ -37,7 +43,7 @@ class TestDataSource(unittest.TestCase):
 
 
     def test_sum_total_spendings_and_income(self):
-        data = ds.getData(self.data_file, 0, 0)
+        data = ds.getData(self.data_file, 0, 3)
 
         # Test sum total
         ds.sumTotal(data)
