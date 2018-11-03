@@ -34,16 +34,20 @@
             spacing: 0;
             text-align: right;
             padding: 4px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            padding-left: 7px;
             border-left: #e4e7ea solid 1px;
             border-bottom: #e4e7ea solid 1px;
-{#            border-bottom: #e4e7ea solid 0px;#}
         }
 
         td.right{
             border-left: none;
+        }
+
+        td.min_amount{
+           border: solid #00f600 2px;
+        }
+
+        td.max_amount{
+           border: solid #ffb7b9 2px;
         }
 
         .header{
@@ -69,8 +73,6 @@
 
         .amount{
             float: right;
-{#            font-size: smaller;#}
-{#            color: #b4b7b9;#}
             color: #727476;
         }
     </style>
@@ -79,12 +81,22 @@
 
 
     <table border="0" cellspacing="0">
+
+    {# Categories in rows #}
     {% for row in report_weeks %}
-        {# Categories in rows #}
 
         {% if '.' in row[0] %}
             {% set row_class="higlight" %}
         {% endif %}
+
+
+        {% set amounts = row | select("number") | reject("equalto", 0) %}
+
+        {# Looking for lower spending which is negative number that is why "max" is used #}
+        {% set min_amount = amounts | max %}
+
+        {# Looking for highest spending which is negative number that is why "min" is used #}
+        {% set max_amount = row | select("number") | reject("equalto", 0) | min %}
 
         <tr class="{{ row_class }}">
         {% set row_num=loop.index %}
@@ -102,16 +114,20 @@
             {% endif %}
 
                 {% if cell is number %}
-                    {% set cell = cell  %}
+                    {% if cell == min_amount %}
+                        {% set min_max_class = "min_amount" %}
+                    {% elif cell == max_amount %}
+                        {% set min_max_class = "max_amount" %}
+                    {% endif %}
                 {%  endif %}
 
                 {% set prev_cell = loop.previtem %}
 
 
                 {% if prev_cell is number %}
-                    {% set diff =  cell - prev_cell %}
+                    {% set diff = cell - prev_cell %}
                     {% if prev_cell > 0 %}
-                        {%  set diff = 0 %}
+                        {% set diff = 0 %}
                     {% endif %}
 
                     {% if diff > 0 %}
@@ -122,9 +138,11 @@
                         {% set cell_class = 'increased' %}
                     {% endif %}
 
-                    <td class="{{ _class }}"><span class="amount">{{ cell | int | abs }}</span></td>
+                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
                     <td class="{{ _class }} right"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>
 
+                {% elif cell is number %}
+                    <td colspan="2" class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
                 {% else %}
                     <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>
                 {% endif %}
