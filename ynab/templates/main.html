@@ -42,6 +42,9 @@
 {#            border-bottom: #e4e7ea solid 0px;#}
         }
 
+        td.right{
+            border-left: none;
+        }
 
         .header{
             font-weight: bold;
@@ -61,13 +64,14 @@
 
         .decreased{
             text-align: left;
-            color: rgba(9, 225, 24, 0.87);
+            color: rgba(9, 218, 40, 0.87);
         }
 
         .amount{
             float: right;
-            font-size: smaller;
-            color: #b4b7b9;
+{#            font-size: smaller;#}
+{#            color: #b4b7b9;#}
+            color: #727476;
         }
     </style>
 </head>
@@ -118,8 +122,8 @@
                         {% set cell_class = 'increased' %}
                     {% endif %}
 
-                    <td class="{{ _class }}"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>
-                    <td class="{{ _class }}"><span class="amount">{{ cell | int }}</span></td>
+                    <td class="{{ _class }}"><span class="amount">{{ cell | int | abs }}</span></td>
+                    <td class="{{ _class }} right"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>
 
                 {% else %}
                     <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>
