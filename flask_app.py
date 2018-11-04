@@ -1,76 +1,63 @@
-
-# A very simple Flask Hello World app for you to get started with...
+import os
+import tempfile
 
 from flask import Flask
 from flask import render_template
 
+from modules import data_source as ds
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = tempfile.gettempdir()
+ALLOWED_EXTENSIONS = set(['csv', 'zip'])
+
+class storage(object):
+    ynab_file_path = 'none'
+
 @app.route('/')
 def hello_world():
-    return render_template('main.html', report_weeks=[
-['Category', 'May 2018', 'Jun 2018', 'Jul 2018', 'Aug 2018', 'Sep 2018', 'Oct 2018'],
-['Total', -10608, -10341, -9462, -6714, -7866, -9090],
-['Basic needs.', -5373.12, -7458.21, -5902.09, -4333.31, -5291.81, -5231.89],
-['Rent/Mortgage', -2434.67, -2395.32, -2373.76, -2382.58, -2345.17, -2409.91],
-['Groceries', -1477.15, -968.94, -1483.74, -657.67, -1038.84, -1113.83],
-['Misiu jedzenie', -511.07, -484.43, -507.37, -272.96, -331.08, -376.36],
-['Pysia jedzenie', -231.67, -311.29, -424.88, -215.57, -145.85, -299.16],
-['Bus & Tram', -120.0, -120.0, 0.0, -120.0, -150.0, -153.0],
-['Car & Bike', 0.0, -200.0, -52.99, -167.61, -206.64, -397.5],
-['Cosmetics', -209.83, -308.36, -273.52, -75.13, -126.17, -215.45],
-['Grooming', -25.0, -150.0, -75.0, 0.0, -190.0, -40.0],
-['Clothing', -106.8, -560.9, -459.99, 0.0, -400.82, -129.9],
-['Books, Music, Software', -73.6, -525.52, -31.84, -71.99, -74.27, -4.39],
-['Electronics', -99.0, -502.91, 0.0, -164.1, 0.0, 0.0],
-['Home', -84.33, -930.54, -219.0, -205.7, -282.97, -92.39],
-['Health.', -2527.9, -848.11, -1059.43, -611.0, -741.55, -965.16],
-['Ps Justa', -299.0, 0.0, -120.0, -200.0, -400.0, -500.0],
-['Ps ja', -260.0, -200.0, -200.0, -100.0, -240.0, -360.0],
-['Drugs', -29.9, -115.04, -60.83, -101.0, -101.55, -105.16],
-['Justa Medical', -1599.0, -60.0, -200.0, 0.0, 0.0, 0.0],
-['Misiu Medical', -340.0, -473.07, -338.6, -210.0, 0.0, 0.0],
-['Witek', 0.0, 0.0, -140.0, 0.0, 0.0, 0.0],
-['Belonging.', -1470.64, -953.94, -1384.24, -664.29, -530.68, -1571.46],
-['Guests', 0.0, 0.0, 0.0, -63.0, -91.98, -756.02],
-['Dining Out', -588.99, -386.83, -280.6, -412.3, -310.8, -229.25],
-['Entertainment', -382.24, -57.79, -280.38, -76.4, 0.0, -184.0],
-['Taxi', -100.3, -151.32, -461.66, -78.59, -106.4, -223.21],
-['Gifts', -399.11, -45.0, -46.7, -31.0, 0.0, -158.98],
-['Sport', 0.0, -160.0, 0.0, 0.0, 0.0, 0.0],
-['Charity', 0.0, -153.0, -314.9, -3.0, -21.5, -20.0],
-['Development.', -1044.97, -900.0, -900.0, -900.0, -1104.58, -1113.99],
-['Justa Development', -34.99, 0.0, 0.0, 0.0, -304.58, -313.99],
-['Business training', -1009.98, -900.0, -900.0, -900.0, -800.0, -800.0],
-['Bills.', -191.93, -178.09, -197.01, -154.14, -172.48, -190.16],
-['Bank fees', -14.98, -12.61, -10.06, 0.27, -9.49, -6.33],
-['Play - komorka', -69.95, -58.48, -79.95, -47.41, -55.99, -76.83],
-['Internet', -44.0, -44.0, -44.0, -44.0, -44.0, -44.0],
-['Netflix', -13.0, -13.0, -13.0, -13.0, -13.0, -13.0],
-['Azuon', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-['Garaz', -50.0, -50.0, -50.0, -50.0, -50.0, -50.0],
-['Income.', 0.0, -2.9, -19.8, -51.0, 176.33, -18.0],
-['Justa prezent', 0.0, 0.0, 0.0, -12.0, -24.99, 0.0],
-['Allegro sprzedaz', 0.0, -2.9, -19.8, -39.0, 201.32, -18.0],
-['Australia.', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-['English Lessons', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-['IELTS egzam', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-
-        ])
-        # '36':
-        #     {'Groceries':[1200,1500]},
-        #     {'Dining Out':[350, 280]})
+    content = ds.getData(os.path.join(UPLOAD_FOLDER, storage.ynab_file_path), -10, 6)
+    return render_template('main.html', report_weeks=content)
 
 
+from flask import flash, request, redirect
+from werkzeug.utils import secure_filename
 
-# from xhtml2pdf import pisa
-# from cStringIO import StringIO
-#
-# def create_pdf(pdf_data):
-#     pdf = StringIO()
-#     pisa.CreatePDF(StringIO(pdf_data.encode('utf-8')), pdf)
-#     return pdf
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            storage.ynab_file_path = filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect('/')
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
