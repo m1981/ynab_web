@@ -14,7 +14,7 @@ REPORT_FILENAME = 'report.csv'
 
 @app.route('/')
 def hello_world():
-    content = ds.getData(os.path.join(UPLOAD_FOLDER, REPORT_FILENAME), -10, 6)
+    content = ds.getData(os.path.join(UPLOAD_FOLDER, REPORT_FILENAME), -9, 6)
     return render_template('main.html', report_weeks=content)
 
 

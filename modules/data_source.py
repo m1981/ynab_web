@@ -7,6 +7,7 @@ class YnabError(RuntimeError): pass
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
     data = purgeData(data)
+    sumTotal(data)
     return data
 
 def getData_(filepath, start, count, encoding='utf-8'):

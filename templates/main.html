@@ -27,11 +27,9 @@
 
         tr.higlight{
             background-color: #d6e0e3;
-
         }
 
         td{
-            spacing: 0;
             text-align: right;
             padding: 4px;
             border-left: #e4e7ea solid 1px;
@@ -47,7 +45,7 @@
         }
 
         td.max_amount{
-           border: solid #ffb7b9 1px;
+           border: solid #ff7c8a 1px;
         }
 
         .header{
@@ -55,7 +53,6 @@
             color: white;
             background-color: #163a47;
         }
-
 
         .col_header{
             color: black;
@@ -82,7 +79,7 @@
 <body>
 
 
-    <table border="0" cellspacing="0">
+    <table border="0" cellspacing="0" cellpadding="0">
 
     {# Categories in rows #}
     {% for row in report_weeks %}
@@ -91,14 +88,14 @@
             {% set row_class="higlight" %}
         {% endif %}
 
-
-        {% set amounts = row | select("number") | reject("equalto", 0) %}
+        {# Select spendings except last month (current) #}
+        {% set amounts = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) %}
 
         {# Looking for lower spending which is negative number that is why "max" is used #}
         {% set min_amount = amounts | max %}
 
         {# Looking for highest spending which is negative number that is why "min" is used #}
-        {% set max_amount = row | select("number") | reject("equalto", 0) | min %}
+        {% set max_amount = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) | min %}
 
         <tr class="{{ row_class }}">
         {% set row_num=loop.index %}
