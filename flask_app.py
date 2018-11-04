@@ -10,13 +10,11 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = set(['csv', 'zip'])
-
-class storage(object):
-    ynab_file_path = 'none'
+REPORT_FILENAME = 'report.csv'
 
 @app.route('/')
 def hello_world():
-    content = ds.getData(os.path.join(UPLOAD_FOLDER, storage.ynab_file_path), -10, 6)
+    content = ds.getData(os.path.join(UPLOAD_FOLDER, REPORT_FILENAME), -10, 6)
     return render_template('main.html', report_weeks=content)
 
 
@@ -44,8 +42,7 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            storage.ynab_file_path = filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], REPORT_FILENAME))
             return redirect('/')
     return '''
     <!doctype html>

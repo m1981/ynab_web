@@ -4,6 +4,11 @@ import csv
 import io
 
 def getData(filepath, start=0, count=0, encoding='utf-8'):
+    data = getData_(filepath, start, count, encoding)
+    # data = stripData(data)
+    return data
+
+def getData_(filepath, start=0, count=0, encoding='utf-8'):
     ret = []
     with io.open(filepath, 'r', encoding=encoding) as csvfile:
         cvsreader = csv.reader(csvfile)
@@ -12,7 +17,7 @@ def getData(filepath, start=0, count=0, encoding='utf-8'):
                 new_row = []
                 columns = len(row)
                 if start < 0:
-                    start = (columns-0) + start
+                    start = columns + start
 
                 for j, val in enumerate(row):
                     if j == 0:
@@ -31,6 +36,11 @@ def getData(filepath, start=0, count=0, encoding='utf-8'):
                 print('\n\nError while parsing row: {}\n{}'.format(i+1, filepath))
                 raise
         return ret
+
+
+
+def stripData(data):
+    tmp = []
 
 
 def sortData(data):
