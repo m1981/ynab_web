@@ -43,11 +43,11 @@
         }
 
         td.min_amount{
-           border: solid #00f600 2px;
+           border: solid #00f600 1px;
         }
 
         td.max_amount{
-           border: solid #ffb7b9 2px;
+           border: solid #ffb7b9 1px;
         }
 
         .header{
@@ -62,13 +62,15 @@
         }
 
         .increased{
-            text-align: left;
             color: indianred;
         }
 
         .decreased{
-            text-align: left;
             color: rgba(9, 218, 40, 0.87);
+        }
+
+        .minor{
+            color: rgba(216, 218, 210, 0.87);
         }
 
         .amount{
@@ -126,6 +128,8 @@
 
                 {% if prev_cell is number %}
                     {% set diff = cell - prev_cell %}
+
+                    {#  Do not diff if income detected i previous month #}
                     {% if prev_cell > 0 %}
                         {% set diff = 0 %}
                     {% endif %}
@@ -136,6 +140,11 @@
                     {% elif diff < 0 %}
                         {% set sign = "" %}
                         {% set cell_class = 'increased' %}
+                    {% endif %}
+
+                    {# Hide minor amounts #}
+                    {% if diff | abs < 100 %}
+                        {% set cell_class = 'minor' %}
                     {% endif %}
 
                     <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
