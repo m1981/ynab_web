@@ -2,13 +2,14 @@ __author__ = 'Michal'
 
 import csv
 import io
+class YnabError(RuntimeError): pass
 
-def getData(filepath, start=0, count=0, encoding='utf-8'):
+def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
-    # data = stripData(data)
+    data = purgeData(data)
     return data
 
-def getData_(filepath, start=0, count=0, encoding='utf-8'):
+def getData_(filepath, start, count, encoding='utf-8'):
     ret = []
     with io.open(filepath, 'r', encoding=encoding) as csvfile:
         cvsreader = csv.reader(csvfile)
@@ -18,8 +19,11 @@ def getData_(filepath, start=0, count=0, encoding='utf-8'):
                 columns = len(row)
                 if start < 0:
                     start = columns + start
+                if count == -1:
+                    count = columns - start
 
                 for j, val in enumerate(row):
+                    # Strip caption from unicode chars
                     if j == 0:
                         safe_label = ''.join([i if ord(i) < 128 else '' for i in val])
                         safe_label = safe_label.strip()
@@ -39,9 +43,25 @@ def getData_(filepath, start=0, count=0, encoding='utf-8'):
 
 
 
-def stripData(data):
+def purgeData(data):
     tmp = []
+    begin_category = 'Basic needs.'
+    ignored_categories = ['Hidden Categories', 'Total Expenses', 'Net Income']
+    if begin_category not in str(data):
+        raise YnabError('Category not found! ({})'.format(begin_category))
 
+    # Append header row
+    tmp.append(data[0])
+    skip = True
+    for cat in data:
+        # Disable skip if begin category found
+        if skip and cat[0] == begin_category:
+            skip = False
+        # Skip
+        if skip or cat[0] in ignored_categories: continue
+        tmp.append(cat)
+    # pprint(tmp)
+    return tmp
 
 def sortData(data):
     # print(data)
@@ -67,6 +87,7 @@ def sumTotal(data):
     data.insert(1, total)
 
 def printData(data):
-    for row in data:
-        print('{},'.format(row))
+    pass
+    # for row in data:
+    #     print('{},'.format(row))
 
