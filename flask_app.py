@@ -47,6 +47,7 @@ def upload_file():
     return '''
     <!doctype html>
     <title>Upload new File</title>
+    <a href="/">Back to Report</a>
     <h1>Upload new File</h1>
     <form method=post enctype=multipart/form-data>
       <input type=file name=file>

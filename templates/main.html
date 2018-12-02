@@ -153,7 +153,7 @@
                     {% endif %}
 
                     <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
-                    <td class="{{ _class }} right"><span class=" diff {{ cell_class }}">{{ sign }}{{ diff | abs | int }}</span></td>
+                    <td class="{{ _class }} right"><span class=" diff {{ cell_class }}">{{ sign }}{{ '{0:,}'.format(diff | abs | int) }}</span></td>
 
                 {% elif cell is number %}
                     <td colspan="2" class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
