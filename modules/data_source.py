@@ -91,9 +91,9 @@ def sumTotal(data):
         # Add rounded sum
         total.append(int(sum))
         # print('total: %s' % int(sum))
-     #for
+    #for
      
-     data.insert(1, total)
+    data.insert(1, total)
 
 def printData(data):
     pass
