@@ -55,6 +55,7 @@
         }
 
         .col_header{
+            text-align: left;
             color: black;
         }
 
@@ -117,7 +118,7 @@
             {# Set header styles #}
             {% if row_num == 1 %}
                 {% set _class="header" %}
-            {% elif col_num == 1 %}
+            {% elif col_num == 1 or col_num == loop.length %}
                 {% set _class="col_header" %}
             {% endif %}
 
@@ -131,7 +132,7 @@
 
                 {% set prev_cell = loop.previtem %}
 
-                {% if prev_cell is number %}
+                {% if prev_cell is number and cell is number %}
                     {% set diff = cell - prev_cell %}
 
                     {#  Do not diff if income detected i previous month #}

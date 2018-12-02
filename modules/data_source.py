@@ -22,7 +22,8 @@ def getData_(filepath, start, count, encoding='utf-8'):
                     start = columns + start
                 if count == -1:
                     count = columns - start
-
+                
+                safe_label =''
                 for j, val in enumerate(row):
                     # Strip caption from unicode chars
                     if j == 0:
@@ -35,7 +36,9 @@ def getData_(filepath, start, count, encoding='utf-8'):
                         try: val2 = float(val)
                         except: val2=val
                         new_row.append(val2)
-                #
+                #for
+                # Adding categories column at the end.
+                new_row.append(safe_label)
                 ret.append(new_row)
             except:
                 print('\n\nError while parsing row: {}\n{}'.format(i+1, filepath))
@@ -75,7 +78,7 @@ def sortData(data):
 def sumTotal(data):
     total = ['Total']
     for col_idx, col in enumerate(data[0]):
-        if col_idx == 0: continue
+        if col_idx == 0 or col_idx == len(data[0])-1: continue
         sum = 0
         for row_idx, row in enumerate(data):
             # Ignore grouped categories and hidden categories
@@ -88,8 +91,9 @@ def sumTotal(data):
         # Add rounded sum
         total.append(int(sum))
         # print('total: %s' % int(sum))
-    #
-    data.insert(1, total)
+     #for
+     
+     data.insert(1, total)
 
 def printData(data):
     pass
