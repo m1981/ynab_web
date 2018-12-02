@@ -46,8 +46,8 @@ def getData_(filepath, start, count, encoding='utf-8'):
 
 def purgeData(data):
     tmp = []
-    begin_category = 'Basic needs.'
-    ignored_categories = ['Hidden Categories', 'Total Expenses', 'Net Income']
+    begin_category = 'Total Income'
+    ignored_categories = ['Total Income', 'Hidden Categories', 'Total Expenses', 'Net Income']
     if begin_category not in str(data):
         raise YnabError('Category not found! ({})'.format(begin_category))
 
@@ -58,9 +58,13 @@ def purgeData(data):
         # Disable skip if begin category found
         if skip and cat[0] == begin_category:
             skip = False
+
         # Skip
         if skip or cat[0] in ignored_categories: continue
+
         tmp.append(cat)
+    #for
+
     # pprint(tmp)
     return tmp
 
