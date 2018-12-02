@@ -15,7 +15,7 @@
         body{
             font-family: 'Lato';
             font-size: 14px;
-            color: #11323C;
+            color: #727476;
             background-color: #559fb3;
         }
 
@@ -25,8 +25,9 @@
             border-top: #e4e7ea solid 1px;
         }
 
-        tr.higlight{
+        .category_group{
             background-color: #d6e0e3;
+            color: black;
         }
 
         td{
@@ -41,11 +42,19 @@
         }
 
         td.min_amount{
-           border-bottom: solid #00f600 1px;
+           border-right: solid #09DA28 2px;
         }
 
         td.max_amount{
-           border-bottom: solid #ff7c8a 1px;
+           border-right: solid #ff7c8a 2px;
+        }
+
+        .increased{
+            color: #ff7c8a;
+        }
+
+        .decreased{
+            color: #09DA28;
         }
 
         .header{
@@ -64,22 +73,14 @@
 
         }
 
-        .increased{
-            color: #cc7a7a;
-        }
-
-        .decreased{
-            color: rgba(9, 218, 40, 0.87);
-        }
-
         .minor{
             color: rgba(216, 218, 210, 0.87);
         }
 
         .amount{
             float: right;
-            color: #727476;
         }
+
     </style>
 </head>
 <body>
@@ -91,7 +92,7 @@
     {% for row in report_weeks %}
 
         {% if '.' in row[0] %}
-            {% set row_class="higlight" %}
+            {% set category_class ="category_group" %}
         {% endif %}
 
         {# Select spendings except last month (current) #}
@@ -103,17 +104,13 @@
         {# Looking for highest spending which is negative number that is why "min" is used #}
         {% set max_amount = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) | min %}
 
-        <tr class="{{ row_class }}">
+        <tr class="{{ category_class }}">
         {% set row_num=loop.index %}
         {% set amount = 0 %}
 
         {#  For each month in category #}
         {% for cell in row %}
             {% set col_num = loop.index %}
-
-{#            {% if report_weeks[0][col_num] == "Nov 2018212" %}#}
-{#            {% else %}#}
-
 
             {# Set header styles #}
             {% if row_num == 1 %}
@@ -153,7 +150,7 @@
                         {% set cell_class = 'minor' %}
                     {% endif %}
 
-                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
+                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
                     <td class="{{ _class }} right"><span class=" diff {{ cell_class }}">{{ sign }}{{ '{0:,}'.format(diff | abs | int) }}</span></td>
 
                 {% elif cell is number %}
