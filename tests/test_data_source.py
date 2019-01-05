@@ -13,7 +13,7 @@ class TestDataSource(unittest.TestCase):
 
     def test_load(self):
         data = ds.getData(self.data_file, 10, 3)
-        data = ds.purgeData(data)
+        data = ds.purgeCategories(data)
         self.assertEqual(data[3][0], 'Misiu jedzenie')
         self.assertEqual(data[3][2], -343.26)
         self.assertEqual(data[3][3], -507.67)
@@ -21,7 +21,7 @@ class TestDataSource(unittest.TestCase):
 
     def test_purgeData(self):
         data = ds.getData_(self.data_file, 0, -1)
-        data = ds.purgeData(data)
+        data = ds.purgeCategories(data)
         # Check if header exists
         self.assertEqual(data[0][1], 'Mar 2017')
 

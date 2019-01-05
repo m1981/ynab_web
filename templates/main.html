@@ -15,7 +15,7 @@
         body{
             font-family: 'Lato';
             font-size: 14px;
-            color: #727476;
+            color: black;
             background-color: #559fb3;
         }
 
@@ -23,11 +23,6 @@
             background-color: #ebf6f9;
             border-right: #e4e7ea solid 1px;
             border-top: #e4e7ea solid 1px;
-        }
-
-        .category_group{
-            background-color: #d6e0e3;
-            color: black;
         }
 
         td{
@@ -71,10 +66,6 @@
         .diff{
             font-size: x-small;
 
-        }
-
-        .minor{
-            color: #D8DAD2;
         }
 
         .amount{
@@ -139,19 +130,15 @@
 
                     {% if diff > 0 %}
                         {% set cell_class = 'decreased' %}
-                        {% set sign = "-" %}
+                        {% set sign = "↓" %}
                     {% elif diff < 0 %}
-                        {% set sign = "+" %}
+                        {% set sign = "↑" %}
                         {% set cell_class = 'increased' %}
                     {% endif %}
 
-                    {# Hide minor amounts #}
-                    {% if diff | abs < 50 %}
-                        {% set cell_class = 'minor' %}
-                    {% endif %}
 
                     <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
-                    <td class="{{ _class }} right"><span class=" diff {{ cell_class }}">{{ sign }}{{ '{0:,}'.format(diff | abs | int) }}</span></td>
+                    <td class="{{ _class }} right"></td>
 
                 {% elif cell is number %}
                     <td colspan="2" class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
@@ -159,7 +146,6 @@
                     <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>
                 {% endif %}
             {% set amount = cell %}
-{#            {% endif %}#}
 
         {% endfor %}
         </tr>

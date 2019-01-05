@@ -6,7 +6,7 @@ class YnabError(RuntimeError): pass
 
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
-    data = purgeData(data)
+    data = purgeCategories(data)
     sumTotal(data)
     return data
 
@@ -39,6 +39,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
                 #for
                 # Adding categories column at the end.
                 new_row.append(safe_label)
+                print(new_row)
                 ret.append(new_row)
             except:
                 print('\n\nError while parsing row: {}\n{}'.format(i+1, filepath))
@@ -47,7 +48,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
 
 
 
-def purgeData(data):
+def purgeCategories(data):
     tmp = []
     begin_category = 'Total Income'
     ignored_categories = ['Total Income', 'Hidden Categories', 'Total Expenses', 'Net Income']
@@ -62,8 +63,8 @@ def purgeData(data):
         if skip and cat[0] == begin_category:
             skip = False
 
-        # Skip
-        if skip or cat[0] in ignored_categories: continue
+        # Skip ignored categories and Category groups
+        if skip or cat[0] in ignored_categories or '.' in cat[0]: continue
 
         tmp.append(cat)
     #for
