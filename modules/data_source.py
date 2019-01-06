@@ -8,6 +8,7 @@ def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
     data = purgeCategories(data)
     sumTotal(data)
+    calcAverge(data)
     return data
 
 def getData_(filepath, start, count, encoding='utf-8'):
@@ -37,9 +38,9 @@ def getData_(filepath, start, count, encoding='utf-8'):
                         except: val2=val
                         new_row.append(val2)
                 #for
-                # Adding categories column at the end.
+                # Adding second categories column on the right.
                 new_row.append(safe_label)
-                print(new_row)
+                # print(new_row)
                 ret.append(new_row)
             except:
                 print('\n\nError while parsing row: {}\n{}'.format(i+1, filepath))
@@ -72,6 +73,23 @@ def purgeCategories(data):
     # pprint(tmp)
     return tmp
 
+def calcAverge(data):
+    # print(data)
+    data[0].append('Average')
+    for row_idx, row in enumerate(data):
+        avg = 0
+        # Skip header row and Total amount
+        if row_idx < 2: continue
+        for col_idx, val in enumerate(row):
+            if  col_idx == 0 or col_idx == len(row) -1:
+                continue
+            else:
+                avg += val
+        avg=avg/(len(row)-2)
+        row.append(avg)
+    #for
+
+
 def sortData(data):
     # print(data)
     pass
@@ -83,7 +101,8 @@ def sumTotal(data):
         sum = 0
         for row_idx, row in enumerate(data):
             # Ignore grouped categories and hidden categories
-            if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]: continue
+            if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]:
+                continue
             val = float(row[col_idx])
 
             # Calculate only spendings

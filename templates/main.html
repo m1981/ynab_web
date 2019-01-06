@@ -110,10 +110,10 @@
                 {% set _class="col_header" %}
             {% endif %}
 
-                {% if cell is number %}
-                    {% if cell == min_amount %}
-                        {% set min_max_class = "min_amount" %}
-                    {% elif cell == max_amount %}
+                {% set sign = '' %}
+                {% if cell is number and loop.index == loop.length - 2 %}
+                    {% if cell | abs > row[-1] | abs %}
+{#                         {% set sign = "↑" %}#}
                         {% set min_max_class = "max_amount" %}
                     {% endif %}
                 {%  endif %}
@@ -128,16 +128,7 @@
                         {% set diff = 0 %}
                     {% endif %}
 
-                    {% if diff > 0 %}
-                        {% set cell_class = 'decreased' %}
-                        {% set sign = "↓" %}
-                    {% elif diff < 0 %}
-                        {% set sign = "↑" %}
-                        {% set cell_class = 'increased' %}
-                    {% endif %}
-
-
-                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
+                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{sign}} {{ '{0:,}'.format(cell | int | abs) }}</span></td>
                     <td class="{{ _class }} right"></td>
 
                 {% elif cell is number %}
