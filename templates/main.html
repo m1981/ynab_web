@@ -45,28 +45,27 @@
            border-right: solid #ff7c8a 2px;
         }
 
-        .increased{
-            color: #ff7c8a;
+        td.high{
+           background-color: #ff7c8a;
         }
 
-        .decreased{
-            color: #09DA28;
+        td.low{
+           background-color: #09DA28;
         }
 
-        .header{
+       .header{
             font-weight: bold;
             color: white;
             background-color: #163a47;
-        }
+       }
 
-        .col_header{
-            text-align: left;
-        }
+       .col_header{
+           text-align: left;
+       }
 
-        .diff{
-            font-size: x-small;
-
-        }
+       .diff{
+           font-size: x-small;
+       }
 
         .amount{
             float: right;
@@ -106,35 +105,31 @@
             {# Set header styles #}
             {% if row_num == 1 %}
                 {% set _class="header" %}
-            {% elif col_num == 1 or col_num == loop.length %}
+            {% elif col_num == 1 or col_num == loop.length - 1 %}
                 {% set _class="col_header" %}
             {% endif %}
 
                 {% set sign = '' %}
-                {% if cell is number and loop.index == loop.length - 2 %}
+                {# Do not indicate low/high for "Total" row>2 AND indicate only last month [-2] #}
+                {% if row_num > 2 and cell is number and loop.index == loop.length - 2 %}
                     {% if cell | abs > row[-1] | abs %}
-{#                         {% set sign = "↑" %}#}
-                        {% set min_max_class = "max_amount" %}
+                         {% set sign = "↗" %}
+                        {% set high_low_class = "high" %}
+{#                        {% set min_max_class = "max_amount" %}#}
+                    {% else %}
+                         {% set sign = "↙" %}
+                        {% set high_low_class = "low" %}
+{#                        {% set min_max_class = "min_amount" %}#}
                     {% endif %}
                 {%  endif %}
 
                 {% set prev_cell = loop.previtem %}
 
-                {% if prev_cell is number and cell is number %}
-                    {% set diff = cell - prev_cell %}
-
-                    {#  Do not diff if income detected i previous month #}
-                    {% if prev_cell > 0 %}
-                        {% set diff = 0 %}
-                    {% endif %}
-
-                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{sign}} {{ '{0:,}'.format(cell | int | abs) }}</span></td>
-                    <td class="{{ _class }} right"></td>
-
-                {% elif cell is number %}
-                    <td colspan="2" class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
+                {% if cell is number %}
+                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{ '{0:,}'.format(cell | int | abs) }}</span></td>
+                    <td class="{{ high_low_class }} right">{{sign}}</td>
                 {% else %}
-                    <td colspan="2" class="{{ _class }}"><div class="caption">{{ cell }}</div></td>
+                    <td colspan="2" class="{{ _class }}"><div class="caption"> {{ cell }}</div></td>
                 {% endif %}
             {% set amount = cell %}
 

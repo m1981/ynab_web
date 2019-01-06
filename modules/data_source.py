@@ -75,17 +75,21 @@ def purgeCategories(data):
 
 def calcAverge(data):
     # print(data)
+    nonDecimalFileds = 2
     data[0].append('Average')
     for row_idx, row in enumerate(data):
         avg = 0
-        # Skip header row and Total amount
-        if row_idx < 2: continue
+        # Skip header row
+        if row_idx < 1: continue
         for col_idx, val in enumerate(row):
             if  col_idx == 0 or col_idx == len(row) -1:
                 continue
             else:
+                try: int(val)
+                except: pass
                 avg += val
-        avg=avg/(len(row)-2)
+        #
+        avg=avg/(len(row)-nonDecimalFileds)
         row.append(avg)
     #for
 
@@ -112,7 +116,7 @@ def sumTotal(data):
         total.append(int(sum))
         # print('total: %s' % int(sum))
     #for
-     
+    total.append('Total')
     data.insert(1, total)
 
 def printData(data):
