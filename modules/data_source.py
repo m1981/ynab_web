@@ -2,6 +2,8 @@ __author__ = 'Michal'
 
 import csv
 import io
+import statistics
+
 class YnabError(RuntimeError): pass
 
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
@@ -74,22 +76,12 @@ def purgeCategories(data):
     return tmp
 
 def calcAverge(data):
-    # print(data)
-    nonDecimalFileds = 2
+    ignoreTextField = 1
+    ignoreCurrentMonth = 1
     data[0].append('Average')
     for row_idx, row in enumerate(data):
-        avg = 0
-        # Skip header row
         if row_idx < 1: continue
-        for col_idx, val in enumerate(row):
-            if  col_idx == 0 or col_idx == len(row) -1:
-                continue
-            else:
-                try: int(val)
-                except: pass
-                avg += val
-        #
-        avg=avg/(len(row)-nonDecimalFileds)
+        avg = statistics.mean(row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)])
         row.append(avg)
     #for
 
