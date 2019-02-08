@@ -4,7 +4,7 @@ import unittest
 import os
 
 import modules.data_source as ds
-
+from pprint import pprint
 
 class TestDataSource(unittest.TestCase):
     def setUp(self):
@@ -13,7 +13,6 @@ class TestDataSource(unittest.TestCase):
 
     def test_load(self):
         data = ds.getData(self.data_file, 10, 3)
-        data = ds.purgeCategories(data)
         self.assertEqual(data[3][0], 'Misiu jedzenie')
         self.assertEqual(data[3][2], -343.26)
         self.assertEqual(data[3][3], -507.67)
@@ -27,15 +26,13 @@ class TestDataSource(unittest.TestCase):
 
 
     def test_load_negative_offset(self):
-        data = ds.getData(self.data_file, -5, 1)
-        print(data)
+        data = ds.getData_(self.data_file, -5, 1)
+
         self.assertEqual(data[0][1], 'Oct 2018')
 
     def test_sum_total_spendings(self):
         data = ds.getData(self.data_file, 0, 3)
 
-        # Test sum total
-        ds.sumTotal(data)
         total_row_idx = 1
         self.assertEqual(data[total_row_idx][2], -55)
 
@@ -43,8 +40,6 @@ class TestDataSource(unittest.TestCase):
     def test_sum_total_spendings_and_income(self):
         data = ds.getData(self.data_file, 0, 3)
 
-        # Test sum total
-        ds.sumTotal(data)
         total_row_idx = 1
         self.assertEqual(data[total_row_idx][3], -120)
 

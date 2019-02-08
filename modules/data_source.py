@@ -3,6 +3,7 @@ __author__ = 'Michal'
 import csv
 import io
 import statistics
+from pprint import pprint
 
 class YnabError(RuntimeError): pass
 
@@ -71,8 +72,6 @@ def purgeCategories(data):
 
         tmp.append(cat)
     #for
-
-    # pprint(tmp)
     return tmp
 
 def calcAverge(data):
@@ -113,6 +112,11 @@ def sumTotal(data):
 
 def printData(data):
     pass
-    # for row in data:
-    #     print('{},'.format(row))
 
+def get_month_progress():
+    # 0.285
+    import calendar
+    import datetime
+    print(datetime.datetime.date())
+    calendar.monthrange()
+    pass
