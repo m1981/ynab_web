@@ -43,3 +43,6 @@ class TestDataSource(unittest.TestCase):
         total_row_idx = 1
         self.assertEqual(data[total_row_idx][3], -120)
 
+
+    def test_month_progress(self):
+        ds.get_month_progress()

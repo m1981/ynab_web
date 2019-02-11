@@ -64,7 +64,7 @@
 </head>
 <body>
 
-    <a href="/upload">Upload</a>
+    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }}
     <table border="0" cellspacing="0" cellpadding="0">
 
     {# Categories in rows #}
@@ -88,13 +88,15 @@
         {% set amount = 0 %}
         {% set overspend_days = 0 %}
 
-        {# Create progress bar #}
-        {% if row_num > 1  %}
-            {%  set month_spending_sofar = row[-3]/(row[-1]+1)%}
-            {%  set month_progress = 14/31  %}
+        {# Create progress indicator for categories with cahracter ',' in name #}
+        {% if ',' in row[0] %}
+            {# Category average: row[-3]   #}
+            {# Currnet spending: row[-1]+1  #}
+            {% set average_spending = (row[-1]+1) * 0.1 %}
+            {%  set month_spending_sofar = row[-3]/average_spending %}
             {% if month_spending_sofar > month_progress %}
                 {% set overspend = month_spending_sofar - month_progress %}
-                {% set overspend_days = ((overspend * 31) + 1) | int %}
+                {% set overspend_days = ((overspend * 28) + 1) | int %}
             {% else %}
                 {%  set overspend_days = 0 %}
             {% endif %}
@@ -116,8 +118,8 @@
                 {% set _class="col_header" %}
             {% endif %}
 
-            {# Display progress for current month but bo not display it for Total month row > 2 #}
-            {%  if row_num > 2 and col_num == loop.length - 2 %}
+            {# Display progress for current month but do not display it for Total month row > 2 #}
+            {% if row_num > 2 and col_num == loop.length - 2 %}
                 {% if overspend_days > 0 %}
                     {% set display_progress_bar %}
                         <span style="color: darkorange;">{{overspend_days}}d</span>
@@ -126,22 +128,31 @@
                 {% endif %}
             {% endif %}
 
-                {% set prev_cell = loop.previtem %}
+            {% set prev_cell = loop.previtem %}
 
-                {% if cell is number %}
-                    <td class="{{ _class }} {{ min_max_class }}">
-                        <div style="display: flex; justify-content: space-between;">
-                            {{ display_progress_bar }}
-                            <span class="amount {{ high_low_class }} {{ category_class }}">
-                                {{ '{0:,}'.format(cell | int | abs) }}
-                            </span>
-                        </div>
-                    </td>
-{#                    <td class="{{ high_low_class }} right">{{sign}}</td>#}
+            {% if cell is number %}
+                {% if col_num == loop.length %}
+                    {% if average_spending %}
+                        {%  set val2 = average_spending %}
+                        {{ average_spending }}
+                    {% else %}
+                       {% set val2 = cell %}
+                    {% endif %}
                 {% else %}
-                    <td class="{{ _class }}"><div class="">{{ cell }}</div>
-                    </td>
+                    {%  set val2 = cell %}
                 {% endif %}
+                <td class="{{ _class }} {{ min_max_class }}">
+                    <div style="display: flex; justify-content: space-between;">
+                        {{ display_progress_bar }}
+                        <span class="amount {{ high_low_class }} {{ category_class }}">
+                            {{ '{0:,}'.format(val2 | int | abs) }}
+                        </span>
+                    </div>
+                </td>
+            {% else %}
+                <td class="{{ _class }}"><div class="">{{ cell }}</div>
+                </td>
+            {% endif %}
             {% set amount = cell %}
 
         {% endfor %}

@@ -117,6 +117,14 @@ def get_month_progress():
     # 0.285
     import calendar
     import datetime
-    print(datetime.datetime.date())
-    calendar.monthrange()
-    pass
+    now = datetime.datetime.now().date()
+    print(now)
+    year = now.year
+    month = now.month
+    day = now.day
+    print(year)
+    month_length = calendar.monthrange(year, month)[1]
+    print(month_length)
+    ret = day / month_length
+    print(ret)
+    return ret
