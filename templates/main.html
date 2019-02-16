@@ -92,7 +92,7 @@
         {% if ',' in row[0] %}
             {# Category average: row[-3]   #}
             {# Currnet spending: row[-1]+1  #}
-            {% set average_spending = (row[-1]+1) * 0.1 %}
+            {% set average_spending = (row[-1]+1) * 0.9 %}
             {%  set month_spending_sofar = row[-3]/average_spending %}
             {% if month_spending_sofar > month_progress %}
                 {% set overspend = month_spending_sofar - month_progress %}
