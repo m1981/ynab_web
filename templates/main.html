@@ -85,24 +85,30 @@
 
         <tr class="{{ category_class }}">
         {% set row_num=loop.index %}
+
         {% set amount = 0 %}
         {% set overspend_days = 0 %}
 
-        {# Create progress indicator for categories with cahracter ',' in name #}
-        {% if ',' in row[0] %}
-            {# Category average: row[-3]   #}
-            {# Currnet spending: row[-1]+1  #}
-            {% set average_spending = (row[-1]+1) * 0.9 %}
-            {%  set month_spending_sofar = row[-3]/average_spending %}
-            {% if month_spending_sofar > month_progress %}
-                {% set overspend = month_spending_sofar - month_progress %}
-                {% set overspend_days = ((overspend * 28) + 1) | int %}
+        {% if row_num > 1 %}
+            {# Category average #}
+            {% set actual_month_spending = row[-3] | abs %}
+            {% set average_spending = (row[-1]+1 * 0.99) | abs %}
+            {%  set actual_month_spending_ratio = actual_month_spending/average_spending %}
+
+            {# Create progress indicator for categories with cahracter ',' in name #}
+            {% if ',' in row[0] %}
+                {% if actual_month_spending_ratio > month_progress %}
+                    {% set overspend = actual_month_spending_ratio - month_progress %}
+                    {% set overspend_days = ((overspend * 28) + 1) | int %}
+                {% else %}
+                    {%  set overspend_days = 0 %}
+                {% endif %}
             {% else %}
-                {%  set overspend_days = 0 %}
+                {% if actual_month_spending >= average_spending %}
+                    {% set overspend_days = 99 %}
+                {% endif %}
             {% endif %}
-
         {% endif %}
-
 
         {#  For each month in category #}
         {% for cell in row %}
@@ -134,7 +140,6 @@
                 {% if col_num == loop.length %}
                     {% if average_spending %}
                         {%  set val2 = average_spending %}
-                        {{ average_spending }}
                     {% else %}
                        {% set val2 = cell %}
                     {% endif %}
