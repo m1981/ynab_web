@@ -14,8 +14,8 @@ class TestDataSource(unittest.TestCase):
     def test_load(self):
         data = ds.getData(self.data_file, 10, 3)
         self.assertEqual(data[3][0], 'Misiu jedzenie')
-        self.assertEqual(data[3][2], -343.26)
-        self.assertEqual(data[3][3], -507.67)
+        self.assertEqual(data[3][2], -183.25)
+        self.assertEqual(data[3][3], -343.26)
 
 
     def test_purgeData(self):
@@ -28,7 +28,16 @@ class TestDataSource(unittest.TestCase):
     def test_load_negative_offset(self):
         data = ds.getData_(self.data_file, -5, 1)
 
-        self.assertEqual(data[0][1], 'Oct 2018')
+        self.assertEqual(data[0][1], 'Sep 2018')
+
+    def test_getData_columns_out_of_scope(self):
+        # data = ds.getData_(self.data_file, -3, 6)
+        self.assertRaises(RuntimeError, ds.getData_, self.data_file, -3, 6)
+
+
+    def test_load_negative_offset3(self):
+        self.assertRaises(RuntimeError, ds.getData, self.data_file, -40, 6)
+
 
     def test_sum_total_spendings(self):
         data = ds.getData(self.data_file, 0, 3)

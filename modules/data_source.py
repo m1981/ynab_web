@@ -7,6 +7,9 @@ from pprint import pprint
 
 class YnabError(RuntimeError): pass
 
+EXCLUDED_COLUMNS_AT_BEGIN = 1
+EXCLUDED_COLUMNS_AT_END = 2
+
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
     data = purgeCategories(data)
@@ -15,6 +18,9 @@ def getData(filepath, start=0, count=-1, encoding='utf-8'):
     return data
 
 def getData_(filepath, start, count, encoding='utf-8'):
+    if start < 0 and count > abs(start):
+        raise RuntimeError('Columns out of scope! Start: %s, Count: %s' % (start, count))
+
     ret = []
     with io.open(filepath, 'r', encoding=encoding) as csvfile:
         cvsreader = csv.reader(csvfile)
@@ -23,7 +29,10 @@ def getData_(filepath, start, count, encoding='utf-8'):
                 new_row = []
                 columns = len(row)
                 if start < 0:
+                    if abs(start) > columns:
+                        raise RuntimeError('Offset error!. Start %s but only %s columns available.' % (start, columns))
                     start = columns + start
+                    print('i:%s, st:%s' % (i, start))
                 if count == -1:
                     count = columns - start
                 
@@ -35,7 +44,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
                         safe_label = safe_label.strip()
                         new_row.append(safe_label)
                     else:
-                        if not (j > start and j <= start + count ):
+                        if j < start or j > (start + count):
                             continue
                         try: val2 = float(val)
                         except: val2=val
@@ -55,7 +64,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
 def purgeCategories(data):
     tmp = []
     begin_category = 'Total Income'
-    ignored_categories = ['Total Income', 'Hidden Categories', 'Total Expenses', 'Net Income']
+    ignored_categories = ['Uncategorized Transactions', 'Total Income', 'Hidden Categories', 'Total Expenses', 'Net Income']
     if begin_category not in str(data):
         raise YnabError('Category not found! ({})'.format(begin_category))
 
@@ -98,7 +107,7 @@ def sumTotal(data):
             # Ignore grouped categories and hidden categories
             if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]:
                 continue
-            val = float(row[col_idx])
+            val =   float(row[col_idx])
 
             # Calculate only spendings
             if val < 0:
