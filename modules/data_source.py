@@ -77,7 +77,7 @@ def purgeCategories(data):
             skip = False
 
         # Skip ignored categories and Category groups
-        if skip or cat[0] in ignored_categories or '.' in cat[0]: continue
+        if skip or cat[0] in ignored_categories or ',' not in cat[0]: continue
 
         tmp.append(cat)
     #for

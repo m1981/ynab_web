@@ -100,7 +100,7 @@
         {% if row_num > 1 %}
             {# Category average #}
             {% set actual_month_spending = row[-3] | abs %}
-            {% set average_spending = (row[-1]+1 * 0.99) | abs %}
+            {% set average_spending = (row[-1] * 0.95) | abs %}
             {%  set actual_month_spending_ratio = actual_month_spending/average_spending %}
 
             {# Create progress indicator for categories with cahracter ',' in name #}
