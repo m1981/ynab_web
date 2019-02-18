@@ -37,6 +37,14 @@
             border-right: #c7cccf solid 1px;
         }
 
+        td.min_amount{
+           border-bottom: solid #00f600 1px;
+        }
+
+        td.max_amount{
+           border-bottom: solid #ff7c8a 1px;
+        }
+
         .high{
            color: #ff7c8a;
         }
@@ -64,7 +72,7 @@
 </head>
 <body>
 
-    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }}
+    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }} or {{ '%0.2f' % (1 - month_progress) }} month left
     <table border="0" cellspacing="0" cellpadding="0">
 
     {# Categories in rows #}
@@ -99,13 +107,9 @@
             {% if ',' in row[0] %}
                 {% if actual_month_spending_ratio > month_progress %}
                     {% set overspend = actual_month_spending_ratio - month_progress %}
-                    {% set overspend_days = ((overspend * 28) + 1) | int %}
+                    {% set overspend_days = '%sd' % ((overspend * 28) + 1) | int %}
                 {% else %}
-                    {%  set overspend_days = 0 %}
-                {% endif %}
-            {% else %}
-                {% if actual_month_spending >= average_spending %}
-                    {% set overspend_days = 99 %}
+                    {%  set overspend_days = '' %}
                 {% endif %}
             {% endif %}
         {% endif %}
@@ -126,9 +130,9 @@
 
             {# Display progress for current month but do not display it for Total month row > 2 #}
             {% if row_num > 2 and col_num == loop.length - 2 %}
-                {% if overspend_days > 0 %}
+                {% if overspend_days %}
                     {% set display_progress_bar %}
-                        <span style="color: darkorange;">{{overspend_days}}d</span>
+                        <span style="color: darkorange;">{{overspend_days}}</span>
                     {% endset %}
                 {% else %}
                 {% endif %}
@@ -141,9 +145,14 @@
                     {% if average_spending %}
                         {%  set val2 = average_spending %}
                     {% else %}
-                       {% set val2 = cell %}
+                       {% set val2 = 999999999 %}
                     {% endif %}
                 {% else %}
+                    {% if cell | abs > average_spending %}
+                        {% set min_max_class = 'max_amount' %}
+                    {% else %}
+                        {% set min_max_class = 'min_amount2' %}
+                    {%  endif %}
                     {%  set val2 = cell %}
                 {% endif %}
                 <td class="{{ _class }} {{ min_max_class }}">
