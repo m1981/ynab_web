@@ -72,7 +72,7 @@
 </head>
 <body>
 
-    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }} or {{ '%0.2f' % (1 - month_progress) }} month left
+    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }}
     <table border="0" cellspacing="0" cellpadding="0">
 
     {# Categories in rows #}
@@ -100,14 +100,21 @@
         {% if row_num > 1 %}
             {# Category average #}
             {% set actual_month_spending = row[-3] | abs %}
+
+            {# We targeting to 95% of the average budget to reduce spendings. #}
             {% set average_spending = (row[-1] * 0.95) | abs %}
-            {%  set actual_month_spending_ratio = actual_month_spending/average_spending %}
+
+            {#  +1 to avoid dev-by-zero #}
+            {%  set actual_month_spending_ratio = actual_month_spending/(average_spending+1) %}
 
             {# Create progress indicator for categories with cahracter ',' in name #}
-            {% if ',' in row[0] %}
-                {% if actual_month_spending_ratio > month_progress %}
+{#            {% if ',' in row[0] %}#}
+            {% if 1 %}
+                {% if actual_month_spending_ratio > (1-month_progress) %}
+                    {%  set overspend_days = '!' %}
+                {% elif actual_month_spending_ratio > month_progress %}
                     {% set overspend = actual_month_spending_ratio - month_progress %}
-                    {% set overspend_days = '%sd' % ((overspend * 28) + 1) | int %}
+                    {% set overspend_days = '%sd' % ((overspend * 31) + 1) | int %}
                 {% else %}
                     {%  set overspend_days = '' %}
                 {% endif %}
@@ -128,8 +135,8 @@
                 {% set _class="col_header" %}
             {% endif %}
 
-            {# Display progress for current month but do not display it for Total month row > 2 #}
-            {% if row_num > 2 and col_num == loop.length - 2 %}
+            {# Display progress for current month. #}
+            {% if row_num > 1 and col_num == loop.length - 2 %}
                 {% if overspend_days %}
                     {% set display_progress_bar %}
                         <span style="color: darkorange;">{{overspend_days}}</span>
