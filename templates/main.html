@@ -110,9 +110,7 @@
             {# Create progress indicator for categories with cahracter ',' in name #}
 {#            {% if ',' in row[0] %}#}
             {% if 1 %}
-                {% if actual_month_spending_ratio > (1-month_progress) %}
-                    {%  set overspend_days = '!' %}
-                {% elif actual_month_spending_ratio > month_progress %}
+                {% if actual_month_spending_ratio > month_progress %}
                     {% set overspend = actual_month_spending_ratio - month_progress %}
                     {% set overspend_days = '%sd' % ((overspend * 31) + 1) | int %}
                 {% else %}
