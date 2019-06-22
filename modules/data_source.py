@@ -78,19 +78,27 @@ def purgeCategories(data):
 
         # Skip ignored categories and Category groups
         if skip or cat[0] in ignored_categories or '.' in cat[0]: continue
+        if ',' not in cat[0]: continue
 
         tmp.append(cat)
     #for
     return tmp
 
 def calcAverge(data):
+    lastMonths = 12
     ignoreTextField = 1
     ignoreCurrentMonth = 1
     data[0].append('Average')
     for row_idx, row in enumerate(data):
         if row_idx < 1: continue
-        avg = statistics.mean(row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)])
-        print(row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)])
+        to = -(ignoreCurrentMonth + ignoreTextField)
+        fro = -lastMonths + to
+        print(row[fro:to])
+        print(sum(row[fro:to]))
+        if sum(row[fro:to]) == 0:
+            avg = 1
+        else:
+            avg = statistics.mean(row[fro:to])
         row.append(avg)
     #for
 
