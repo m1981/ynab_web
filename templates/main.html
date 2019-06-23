@@ -53,21 +53,28 @@
            color: #09DA28;
         }
 
-       .header{
+        .header{
             font-weight: bold;
             color: white;
             background-color: #163a47;
-       }
+        }
 
-       .col_header{
+        .col_header{
            text-align: left;
-       }
+        }
 
         .amount{
 {#            float: right;#}
 {#            width: 70%;#}
         }
 
+        .color_warning{
+            color: crimson;
+        }
+
+        .color_positive{
+            color: #1cac76;
+        }
     </style>
 </head>
 <body>
@@ -75,46 +82,36 @@
     <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }}
     <table border="0" cellspacing="0" cellpadding="0">
 
-    {# Categories in rows #}
+    {# Iterate over categories #}
     {% for row in report_weeks %}
 
-        {% if '.' in row[0] %}
-            {% set category_class ="category_group" %}
-        {% endif %}
 
-        {# Select spendings except last month (current) #}
-        {% set amounts = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) %}
-
-        {# Looking for lower spending which is negative number that is why "max" is used #}
-        {% set min_amount = amounts | max %}
-
-        {# Looking for highest spending which is negative number that is why "min" is used #}
-        {% set max_amount = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) | min %}
-
-        <tr class="{{ category_class }}">
+        <tr>
         {% set row_num=loop.index %}
 
-        {% set amount = 0 %}
+        {# Calculate overspending in each category #}
         {% set overspend_days = 0 %}
-
         {% if row_num > 1 %}
             {# Category average #}
             {% set actual_month_spending = row[-3] | abs %}
 
-            {% set average_spending = row[-1] | abs %}
+            {% set average_spending = (row[-1] * 1)  | abs %}
 
             {#  +1 to avoid dev-by-zero #}
             {%  set actual_month_spending_ratio = actual_month_spending/(average_spending+1) %}
 
-            {% if actual_month_spending_ratio > month_progress %}
+            {# Calculate overspent in days #}
+            {% if actual_month_spending_ratio > month_progress and actual_month_spending < average_spending %}
                 {% set overspend = actual_month_spending_ratio - month_progress %}
-                {% set overspend_days = '%sd' % ((overspend * 31) + 1) | int %}
+                {% set overspend_days = '%sd' % ((overspend * 30) + 1) | int %}
             {% else %}
                 {%  set overspend_days = '' %}
             {% endif %}
         {% endif %}
 
-        {#  For each month in category #}
+
+        {# For each month in category #}
+        {# ----------------------------------------#}
         {% for cell in row %}
             {% set col_num = loop.index %}
 
@@ -125,23 +122,37 @@
                 {% set _class="col_header" %}
             {% endif %}
 
+            {# Set progress for current month #}
+            {% if row_num > 2 and col_num == loop.length - 2 %}
+                {% if overspend_days %}
+                    {% set display_progress_bar %}
+                        <span style="color: darkorange;">{{overspend_days}}</span>
+                    {% endset %}
+                {% elif actual_month_spending > average_spending%}
+                    {% set amount_highlight="color_warning" %}
+                {% else %}
+                    {% set amount_highlight="color_positive" %}
+                {% endif %}
+            {% endif %}
+
+            {# Set average value for last column #}
+            {% if col_num == loop.length %}
+                {% if average_spending %}
+                    {% set val2 = average_spending %}
+                {% else %}
+                    {% set val2 = 999999999 %}
+                {% endif %}
+            {% else %}
+                    {% set val2 = cell %}
+            {% endif %}
 
             {% set prev_cell = loop.previtem %}
 
             {% if cell is number %}
-                {% if col_num == loop.length %}
-                    {% if average_spending %}
-                        {%  set val2 = average_spending %}
-                    {% else %}
-                       {% set val2 = 999999999 %}
-                    {% endif %}
-                {% else %}
-                    {%  set val2 = cell %}
-                {% endif %}
-
                 <td class="{{ _class }}">
                     <div style="display: flex; justify-content: space-between;">
-                        <span class="amount  {{ category_class }}">
+                        {{ display_progress_bar }}
+                        <span class="amount  {{ amount_highlight }}">
                             {{ '{0:,}'.format(val2 | int | abs) }}
                         </span>
                     </div>
@@ -150,7 +161,6 @@
                 <td class="{{ _class }}"><div class="">{{ cell }}</div>
                 </td>
             {% endif %}
-            {% set amount = cell %}
 
         {% endfor %}
         </tr>
