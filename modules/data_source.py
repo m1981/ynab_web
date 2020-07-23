@@ -13,13 +13,10 @@ setlocale(LC_NUMERIC, "pl_PL")
 
 EXCLUDED_COLUMNS_AT_BEGIN = 1
 EXCLUDED_COLUMNS_AT_END = 2
-# csv.register_dialect(u"ynab_export", delimiter=u"\t")
 
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
     data = purgeCategories(data)
-    # sumTotal(data)
-    # calcAverge(data)
     return data
 
 def getData_(filepath, start, count, encoding='utf-8'):
@@ -57,7 +54,6 @@ def getData_(filepath, start, count, encoding='utf-8'):
                 #for
                 # Adding second categories column on the right.
                 new_row.append(safe_label)
-                # print(new_row)
                 ret.append(new_row)
             except:
                 print('\n\nError while parsing row: {}\n{}'.format(i+1, filepath))
@@ -91,63 +87,7 @@ def purgeCategories(data):
     #for
     return tmp
 
-def calcAverge(data):
-    ignoreTextField = 1
-    ignoreCurrentMonth = 1
-    data[0].append('Average')
-    for row_idx, row in enumerate(data):
-        if row_idx < 1: continue
-        st = row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)]
-        avg = statistics.mean(st)
-        row.append(avg)
-    #for
-
-
 def sortData(data):
     # print(data)
     pass
 
-def sumTotal(data):
-    total = ['Total']
-    for col_idx, col in enumerate(data[0]):
-        if col_idx == 0 or col_idx == len(data[0])-1: continue
-        sum = 0
-        for row_idx, row in enumerate(data):
-            # Ignore grouped categories and hidden categories
-            # if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]:
-
-            # Ignore hidden categories
-            if row_idx == 0 or 'Hidden' in row[0]:
-                continue
-            val = row[col_idx]
-            print(val)
-            print(col_idx, col)
-
-            # Calculate only spendings
-            if val < 0:
-                sum += val
-        # Add rounded sum
-        total.append(int(sum))
-        # print('total: %s' % int(sum))
-    #for
-    total.append('Total')
-    data.insert(1, total)
-
-def printData(data):
-    pass
-
-def get_month_progress():
-    # 0.285
-    import calendar
-    import datetime
-    now = datetime.datetime.now().date()
-    print(now)
-    year = now.year
-    month = now.month
-    day = now.day
-    print(year)
-    month_length = calendar.monthrange(year, month)[1]
-    print(month_length)
-    ret = day / month_length
-    print(ret)
-    return ret
