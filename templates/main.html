@@ -15,7 +15,7 @@
         body{
             font-family: 'Lato';
             font-size: 14px;
-            color: black;
+            color: #11323C;
             background-color: #559fb3;
         }
 
@@ -25,7 +25,18 @@
             border-top: #e4e7ea solid 1px;
         }
 
+        tr.higlight{
+            background-color: #d6e0e3;
+
+        }
+
+        .category_group{
+            background-color: #d6e0e3;
+            color: black;
+        }
+
         td{
+            spacing: 0;
             text-align: right;
             padding: 4px;
             border-left: #e4e7ea solid 1px;
@@ -34,37 +45,45 @@
 
         td.right{
             border-left: none;
-            border-right: #c7cccf solid 1px;
         }
 
-        .high{
-           color: #ff7c8a;
-        }
-
-        .low{
-           color: #09DA28;
-        }
-
-       .header{
+        .header{
             font-weight: bold;
             color: white;
             background-color: #163a47;
-       }
-
-       .col_header{
-           text-align: left;
-       }
-
-        .amount{
-{#            float: right;#}
-{#            width: 70%;#}
         }
 
+
+        .col_header{
+            color: black;
+        }
+
+        .increased{
+            text-align: left;
+            color: indianred;
+        }
+
+        .decreased{
+            text-align: left;
+            color: rgba(9, 218, 40, 0.87);
+        }
+
+        .diff{
+            font-size: x-small;
+        }
+
+        .minor{
+            color: #D8DAD2;
+        }
+
+        .amount{
+            float: right;
+        }
     </style>
 </head>
 <body>
 
-    <a href="/upload">Upload</a> {{ '%0.2f' % month_progress }}
+    <a href="/upload">Upload</a>
     <table border="0" cellspacing="0" cellpadding="0">
 
     {# Categories in rows #}
@@ -77,87 +96,64 @@
         {# Select spendings except last month (current) #}
         {% set amounts = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) %}
 
-        {# Looking for lower spending which is negative number that is why "max" is used #}
-        {% set min_amount = amounts | max %}
-
-        {# Looking for highest spending which is negative number that is why "min" is used #}
-        {% set max_amount = row | select("number") | reject("equalto", 0) | reject("equalto", row[-1]) | min %}
-
-        <tr class="{{ category_class }}">
+        <tr class="{{ row_class }}">
         {% set row_num=loop.index %}
-
         {% set amount = 0 %}
-        {% set overspend_days = 0 %}
-
-        {% if row_num > 1 %}
-            {# Category average #}
-            {% set actual_month_spending = row[-3] | abs %}
-            {% set average_spending = (row[-1]+1 * 0.99) | abs %}
-            {%  set actual_month_spending_ratio = actual_month_spending/average_spending %}
-
-            {# Create progress indicator for categories with cahracter ',' in name #}
-            {% if ',' in row[0] %}
-                {% if actual_month_spending_ratio > month_progress %}
-                    {% set overspend = actual_month_spending_ratio - month_progress %}
-                    {% set overspend_days = ((overspend * 28) + 1) | int %}
-                {% else %}
-                    {%  set overspend_days = 0 %}
-                {% endif %}
-            {% else %}
-                {% if actual_month_spending >= average_spending %}
-                    {% set overspend_days = 99 %}
-                {% endif %}
-            {% endif %}
-        {% endif %}
 
         {#  For each month in category #}
         {% for cell in row %}
             {% set col_num = loop.index %}
-            {% set display_progress_bar %}
-                &nbsp;
-            {% endset  %}
 
             {# Set header styles #}
             {% if row_num == 1 %}
                 {% set _class="header" %}
-            {% elif col_num == 1 or col_num == loop.length - 1 %}
+            {% elif col_num == 1 or col_num == loop.length %}
                 {% set _class="col_header" %}
             {% endif %}
 
-            {# Display progress for current month but do not display it for Total month row > 2 #}
-            {% if row_num > 2 and col_num == loop.length - 2 %}
-                {% if overspend_days > 0 %}
-                    {% set display_progress_bar %}
-                        <span style="color: darkorange;">{{overspend_days}}d</span>
-                    {% endset %}
-                {% else %}
-                {% endif %}
-            {% endif %}
+                {% set prev_cell = loop.previtem %}
 
-            {% set prev_cell = loop.previtem %}
+                {% if prev_cell is number and cell is number %}
+                    {% set diff = cell - prev_cell %}
 
-            {% if cell is number %}
-                {% if col_num == loop.length %}
-                    {% if average_spending %}
-                        {%  set val2 = average_spending %}
-                    {% else %}
-                       {% set val2 = cell %}
+                    {#  Do not diff if income detected i previous month #}
+                    {% if prev_cell > 0 %}
+                        {% set diff = 0 %}
                     {% endif %}
+
+                    {% if diff > 0 %}
+                        {% set cell_class = 'decreased' %}
+                        {% set sign = "-" %}
+                    {% elif diff < 0 %}
+                        {% set sign = "+" %}
+                        {% set cell_class = 'increased' %}
+                    {% endif %}
+
+                    {# Hide minor amounts #}
+{#                    {% if diff | abs < 50 %}#}
+{#                        {% set cell_class = 'minor' %}#}
+{#                    {% endif %}#}
+
+{#                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount {{ category_class }}">{{ '{0:,}'.format(cell | int | abs) }}</span></td>#}
+{#                    <td class="{{ _class }} right"><span class=" diff {{ cell_class }}">{{ sign }}{{ '{0:,}'.format(diff | abs | int) }}</span></td>#}
+
+{#                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>#}
+{#                    <td class="{{ _class }} right"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>#}
+
+{#                    <td class="{{ _class }} {{ min_max_class }}"><span class="amount">{{ cell | int | abs }}</span></td>#}
+{#                    <td class="{{ _class }} right"><span class="{{ cell_class }}">{{ sign }}{{ diff | int }}</span></td>#}
+
+                    <td class="{{ _class }} {{ category_class }}"><span class="amount {{ cell_class }}">{{ cell | int | abs }}</span></td>
+
+                    {# Sign disabled #}
+                    {# <td class="{{ _class }} right"><span class="{{ cell_class }}">{{ sign }}</span></td>#}
+                    <td class="{{ _class }} right"><span class="{{ cell_class }}"></span></td>
+
+                {% elif cell is number %}
+                    <td colspan="2" class="{{ _class }} {{ category_class }}"><span class="amount">{{ cell | int | abs }}</span></td>
                 {% else %}
-                    {%  set val2 = cell %}
+                    <td colspan="2" class="{{ _class }} {{ category_class }}"><div class="caption">{{ cell }}</div></td>
                 {% endif %}
-                <td class="{{ _class }} {{ min_max_class }}">
-                    <div style="display: flex; justify-content: space-between;">
-                        {{ display_progress_bar }}
-                        <span class="amount {{ high_low_class }} {{ category_class }}">
-                            {{ '{0:,}'.format(val2 | int | abs) }}
-                        </span>
-                    </div>
-                </td>
-            {% else %}
-                <td class="{{ _class }}"><div class="">{{ cell }}</div>
-                </td>
-            {% endif %}
             {% set amount = cell %}
 
         {% endfor %}

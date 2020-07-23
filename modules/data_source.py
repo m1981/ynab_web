@@ -2,19 +2,24 @@ __author__ = 'Michal'
 
 import csv
 import io
+from locale import atof, atoi, setlocale, LC_NUMERIC
 import statistics
 from pprint import pprint
 
 class YnabError(RuntimeError): pass
 
+
+setlocale(LC_NUMERIC, "pl_PL")
+
 EXCLUDED_COLUMNS_AT_BEGIN = 1
 EXCLUDED_COLUMNS_AT_END = 2
+# csv.register_dialect(u"ynab_export", delimiter=u"\t")
 
 def getData(filepath, start=0, count=-1, encoding='utf-8'):
     data = getData_(filepath, start, count, encoding)
     data = purgeCategories(data)
-    sumTotal(data)
-    calcAverge(data)
+    # sumTotal(data)
+    # calcAverge(data)
     return data
 
 def getData_(filepath, start, count, encoding='utf-8'):
@@ -23,7 +28,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
 
     ret = []
     with io.open(filepath, 'r', encoding=encoding) as csvfile:
-        cvsreader = csv.reader(csvfile)
+        cvsreader = csv.reader(csvfile, dialect="excel-tab")
         for i, row in enumerate(cvsreader):
             try:
                 new_row = []
@@ -35,7 +40,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
                     print('i:%s, st:%s' % (i, start))
                 if count == -1:
                     count = columns - start
-                
+
                 safe_label =''
                 for j, val in enumerate(row):
                     # Strip caption from unicode chars
@@ -46,7 +51,7 @@ def getData_(filepath, start, count, encoding='utf-8'):
                     else:
                         if j < start or j > (start + count):
                             continue
-                        try: val2 = float(val)
+                        try: val2 = int(atof(val))
                         except: val2=val
                         new_row.append(val2)
                 #for
@@ -77,7 +82,10 @@ def purgeCategories(data):
             skip = False
 
         # Skip ignored categories and Category groups
-        if skip or cat[0] in ignored_categories or '.' in cat[0]: continue
+        # if skip or cat[0] in ignored_categories or '.' in cat[0]: continue
+
+        # Skip ignored categories
+        if skip or cat[0] in ignored_categories: continue
 
         tmp.append(cat)
     #for
@@ -89,7 +97,8 @@ def calcAverge(data):
     data[0].append('Average')
     for row_idx, row in enumerate(data):
         if row_idx < 1: continue
-        avg = statistics.mean(row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)])
+        st = row[ignoreTextField:-(ignoreCurrentMonth + ignoreTextField)]
+        avg = statistics.mean(st)
         row.append(avg)
     #for
 
@@ -105,9 +114,14 @@ def sumTotal(data):
         sum = 0
         for row_idx, row in enumerate(data):
             # Ignore grouped categories and hidden categories
-            if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]:
+            # if row_idx == 0 or '.' in row[0] or 'Hidden' in row[0]:
+
+            # Ignore hidden categories
+            if row_idx == 0 or 'Hidden' in row[0]:
                 continue
-            val =   float(row[col_idx])
+            val = row[col_idx]
+            print(val)
+            print(col_idx, col)
 
             # Calculate only spendings
             if val < 0:

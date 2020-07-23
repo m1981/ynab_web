@@ -9,7 +9,7 @@ from modules import data_source as ds
 app = Flask(__name__)
 
 UPLOAD_FOLDER = tempfile.gettempdir()
-ALLOWED_EXTENSIONS = set(['csv', 'zip'])
+ALLOWED_EXTENSIONS = set(['csv', 'tsv', 'zip'])
 REPORT_FILENAME = 'report.csv'
 
 @app.route('/')
@@ -23,6 +23,9 @@ from werkzeug.utils import secure_filename
 
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["SECRET_KEY"] = "sdqdc23f2342d223g"
+app.config["EXPLAIN_TEMPLATE_LOADING"] = True
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -44,17 +47,11 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], REPORT_FILENAME))
             return redirect('/')
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <a href="/">Back to Report</a>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+        else:
+            flash("Supported formats: {}".format(ALLOWED_EXTENSIONS))
+            return redirect(request.url)
 
+    return render_template("upload.html")
 
 
 if __name__ == '__main__':
